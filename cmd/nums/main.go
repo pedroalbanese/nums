@@ -20,7 +20,7 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/pedroalbanese/gocurves"
+	"github.com/pedroalbanese/nums"
 	"github.com/pedroalbanese/randomart"
 )
 
@@ -54,7 +54,7 @@ func main() {
 	var err error
 	var pubkeyCurve elliptic.Curve
 
-	pubkeyCurve = gocurves.Nums512()
+	pubkeyCurve = nums.P512()
 
 	if *keygen {
 		if *key != "" {
@@ -202,10 +202,12 @@ func Sign(data []byte, privkey *ecdsa.PrivateKey) ([]byte, error) {
 		return []byte(hash)
 	}
 	digest := Sum512(data)
+
 	r, s, err := ecdsa.Sign(rand.Reader, privkey, digest[:])
 	if err != nil {
 		return nil, err
 	}
+
 	params := privkey.Curve.Params()
 	curveOrderByteSize := params.P.BitLen() / 8
 	rBytes, sBytes := r.Bytes(), s.Bytes()
@@ -224,7 +226,9 @@ func Verify(data, signature []byte, pubkey *ecdsa.PublicKey) bool {
 		return []byte(hash)
 	}
 	digest := Sum512(data)
+
 	curveOrderByteSize := pubkey.Curve.Params().P.BitLen() / 8
+
 	r, s := new(big.Int), new(big.Int)
 	r.SetBytes(signature[:curveOrderByteSize])
 	s.SetBytes(signature[curveOrderByteSize:])
@@ -233,7 +237,7 @@ func Verify(data, signature []byte, pubkey *ecdsa.PublicKey) bool {
 }
 
 func ReadPrivateKeyFromHex(Dhex string) (*ecdsa.PrivateKey, error) {
-	c := gocurves.Nums512()
+	c := nums.P512()
 	d, err := hex.DecodeString(Dhex)
 	if err != nil {
 		return nil, err
@@ -253,7 +257,7 @@ func ReadPrivateKeyFromHex(Dhex string) (*ecdsa.PrivateKey, error) {
 }
 
 func ReadPrivateKeyFromHexX(Dhex string) (*PrivateKey, error) {
-	c := gocurves.Nums512()
+	c := nums.P512()
 	d, err := hex.DecodeString(Dhex)
 	if err != nil {
 		return nil, err
@@ -294,7 +298,7 @@ func ReadPublicKeyFromHex(Qhex string) (*ecdsa.PublicKey, error) {
 		return nil, errors.New("publicKey is not uncompressed.")
 	}
 	pub := new(ecdsa.PublicKey)
-	pub.Curve = gocurves.Nums512()
+	pub.Curve = nums.P512()
 	pub.X = new(big.Int).SetBytes(q[:64])
 	pub.Y = new(big.Int).SetBytes(q[64:])
 	return pub, nil
@@ -312,7 +316,7 @@ func ReadPublicKeyFromHexX(Qhex string) (*PublicKey, error) {
 		return nil, errors.New("publicKey is not uncompressed.")
 	}
 	pub := new(PublicKey)
-	pub.Curve = gocurves.Nums512()
+	pub.Curve = nums.P512()
 	pub.X = new(big.Int).SetBytes(q[:64])
 	pub.Y = new(big.Int).SetBytes(q[64:])
 	return pub, nil
@@ -329,7 +333,6 @@ func WritePublicKeyToHex(key *ecdsa.PublicKey) string {
 	c := []byte{}
 	c = append(c, x...)
 	c = append(c, y...)
-	c = append([]byte{0x04}, c...)
 	return hex.EncodeToString(c)
 }
 
@@ -463,14 +466,12 @@ func Encrypt(pub *PublicKey, data []byte, random io.Reader, mode int) ([]byte, e
 		tm = append(tm, x2Buf...)
 		tm = append(tm, data...)
 		tm = append(tm, y2Buf...)
-
 		Sum512 := func(msg []byte) []byte {
 			res := sha512.New()
 			res.Write(msg)
 			hash := res.Sum(nil)
 			return []byte(hash)
 		}
-
 		h := Sum512(tm)
 		c = append(c, h...)
 		ct, ok := kdf(length, x2Buf, y2Buf)
