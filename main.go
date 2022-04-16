@@ -33,7 +33,7 @@ func initP512() {
 	p512.B, _ = new(big.Int).SetString("1d99b", 16)
 	p512.Gx, _ = new(big.Int).SetString("02", 16)
 	p512.Gy, _ = new(big.Int).SetString("1c282eb23327f9711952c250ea61ad53fcc13031cf6dd336e0b9328433afbdd8cc5a1c1f0c716fdc724dde537c2b0adb00bb3d08dc83755b205cc30d7f83cf28", 16)
-	p512.BitSize = 256
+	p512.BitSize = 512
 }
 
 func P512() elliptic.Curve {
