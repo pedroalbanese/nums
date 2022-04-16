@@ -1,3 +1,4 @@
+// Nothing Up My Sleeve Elliptic curve NUMSP512d1 Digital Signer/Diffie-Hellman/Crypter
 package main
 
 import (
@@ -19,8 +20,8 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/pedroalbanese/randomart"
 	"github.com/pedroalbanese/gocurves"
+	"github.com/pedroalbanese/randomart"
 )
 
 var (
@@ -147,7 +148,7 @@ func main() {
 			os.Exit(0)
 		} else {
 			os.Exit(1)
-		}	
+		}
 		os.Exit(0)
 	}
 
@@ -363,7 +364,7 @@ type PrivateKey struct {
 	D *big.Int
 }
 
-type gost2012Cipher struct {
+type numsCipher struct {
 	XCoordinate *big.Int
 	YCoordinate *big.Int
 	HASH        []byte
@@ -400,11 +401,11 @@ func CipherMarshal(data []byte) ([]byte, error) {
 	y := new(big.Int).SetBytes(data[64:128])
 	hash := data[128:192]
 	cipherText := data[192:]
-	return asn1.Marshal(gost2012Cipher{x, y, hash, cipherText})
+	return asn1.Marshal(numsCipher{x, y, hash, cipherText})
 }
 
 func CipherUnmarshal(data []byte) ([]byte, error) {
-	var cipher gost2012Cipher
+	var cipher numsCipher
 	_, err := asn1.Unmarshal(data, &cipher)
 	if err != nil {
 		return nil, err
