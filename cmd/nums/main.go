@@ -195,21 +195,17 @@ func main() {
 }
 
 func Sign(data []byte, privkey *ecdsa.PrivateKey) ([]byte, error) {
-
 	Sum512 := func(msg []byte) []byte {
 		res := sha512.New()
 		res.Write(msg)
 		hash := res.Sum(nil)
 		return []byte(hash)
 	}
-
 	digest := Sum512(data)
-
 	r, s, err := ecdsa.Sign(rand.Reader, privkey, digest[:])
 	if err != nil {
 		return nil, err
 	}
-
 	params := privkey.Curve.Params()
 	curveOrderByteSize := params.P.BitLen() / 8
 	rBytes, sBytes := r.Bytes(), s.Bytes()
@@ -221,18 +217,14 @@ func Sign(data []byte, privkey *ecdsa.PrivateKey) ([]byte, error) {
 }
 
 func Verify(data, signature []byte, pubkey *ecdsa.PublicKey) bool {
-
 	Sum512 := func(msg []byte) []byte {
 		res := sha512.New()
 		res.Write(msg)
 		hash := res.Sum(nil)
 		return []byte(hash)
 	}
-
 	digest := Sum512(data)
-
 	curveOrderByteSize := pubkey.Curve.Params().P.BitLen() / 8
-
 	r, s := new(big.Int), new(big.Int)
 	r.SetBytes(signature[:curveOrderByteSize])
 	s.SetBytes(signature[curveOrderByteSize:])
@@ -554,14 +546,12 @@ func Decrypt(priv *PrivateKey, data []byte, mode int) ([]byte, error) {
 	tm = append(tm, x2Buf...)
 	tm = append(tm, c...)
 	tm = append(tm, y2Buf...)
-
 	Sum512 := func(msg []byte) []byte {
 		res := sha512.New()
 		res.Write(msg)
 		hash := res.Sum(nil)
 		return []byte(hash)
 	}
-
 	h := Sum512(tm)
 	if bytes.Compare(h, data[128:192]) != 0 {
 		return c, errors.New("Decrypt: failed to decrypt")
@@ -587,14 +577,12 @@ func randFieldElement(c elliptic.Curve, random io.Reader) (k *big.Int, err error
 
 func intToBytes(x int) []byte {
 	var buf = make([]byte, 4)
-
 	binary.BigEndian.PutUint32(buf, uint32(x))
 	return buf
 }
 
 func kdf(length int, x ...[]byte) ([]byte, bool) {
 	var c []byte
-
 	ct := 1
 	h := sha512.New()
 	for i, j := 0, (length+65)/64; i < j; i++ {
