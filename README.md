@@ -1,2 +1,2 @@
-# NUMS Digital Signer
+# NUMS
 Microsoft Nothing Up My Sleeve Elliptic curves
