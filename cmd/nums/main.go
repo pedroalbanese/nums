@@ -193,14 +193,12 @@ func main() {
 }
 
 func Sign(data []byte, privkey *ecdsa.PrivateKey) ([]byte, error) {
-
 	Sum512 := func(msg []byte) []byte {
 		res := sha512.New()
 		res.Write(msg)
 		hash := res.Sum(nil)
 		return []byte(hash)
 	}
-
 	digest := Sum512(data)
 
 	r, s, err := ecdsa.Sign(rand.Reader, privkey, digest[:])
@@ -219,14 +217,12 @@ func Sign(data []byte, privkey *ecdsa.PrivateKey) ([]byte, error) {
 }
 
 func Verify(data, signature []byte, pubkey *ecdsa.PublicKey) bool {
-
 	Sum512 := func(msg []byte) []byte {
 		res := sha512.New()
 		res.Write(msg)
 		hash := res.Sum(nil)
 		return []byte(hash)
 	}
-
 	digest := Sum512(data)
 
 	curveOrderByteSize := pubkey.Curve.Params().P.BitLen() / 8
@@ -281,7 +277,7 @@ func ReadPrivateKeyFromHexX(Dhex string) (*eccrypt512.PrivateKey, error) {
 func WritePrivateKeyToHex(key *ecdsa.PrivateKey) string {
 	d := key.D.Bytes()
 	if n := len(d); n < 64 {
-		d = append(zeroByteSlice()[:128-n], d...)
+		d = append(zeroByteSlice()[:64-n], d...)
 	}
 	c := []byte{}
 	c = append(c, d...)
