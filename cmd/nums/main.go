@@ -319,6 +319,7 @@ func ReadPublicKeyFromHexX(Qhex string) (*eccrypt512.PublicKey, error) {
 	pub.Y = new(big.Int).SetBytes(q[64:])
 	return pub, nil
 }
+
 func WritePublicKeyToHex(key *ecdsa.PublicKey) string {
 	x := key.X.Bytes()
 	y := key.Y.Bytes()
